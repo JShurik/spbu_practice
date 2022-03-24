@@ -1,25 +1,32 @@
 ﻿#include <iostream>
 #include "poly.h"
 
-#define ERROR(e_num) exept = { i, e_num }; \
+#define ERROR(except, i, e_num) exept-> = { i, e_num }; \
 					print_exeption(&exept); \
-					return (poly*)NULL;
+					poly_free(result); poly_free(temp_monomial); \
+					return (poly*)NULL
+
+#define RETURN_NULL(result, temp) poly_free(result); poly_free(temp); \
+								return (poly*)NULL
+
+enum state { SGN, DIGIT, X, EXP };
 
 void poly_free(poly* p) {
-	if (p == NULL)
-		return;
-	poly_free(p->next);
-	free(p);
+	poly* t;
+	while (p) {
+		t = p->next;
+		free(p);
+		p = t;
+	}
 	return;
 }
 
 void print_exeption(exeption* ex) {
-
 	printf("               ");
 	for (int i = 0; i < ex->pos; ++i) {
-		printf(" ");
+		printf("~");
 	}
-	printf("?\n");
+	printf("^\n");
 	printf("Error. ");
 	switch (ex->e)
 	{
@@ -47,74 +54,102 @@ void print_exeption(exeption* ex) {
 
 poly* poly_get_monomial(int coeff, int exp) {
 	poly* result = (poly*)malloc(sizeof(poly));
-	result->coeff = coeff; 
-	result->exp = exp; 
-	result->next = NULL;
+	if (result) {
+		result->coeff = coeff;
+		result->exp = exp;
+		result->next = NULL;
+	}
 	return result;
+}
+
+void poly_clone(poly** target, poly* p) {
+	poly_free(*target);
+	*target = poly_get_monomial(0, 0);
+	poly* temp = NULL;
+	while (p) {
+		if ((*target)->coeff == 0 && (*target)->exp == 0) {
+			temp = *target;
+		}
+		else {
+			temp = poly_get_monomial(0,0);
+		}
+		memcpy(temp, p, sizeof(poly));
+		temp->next = NULL;
+		(*target)->next = temp;
+		*target = temp;
+		p = p->next;
+	}
+	(*target)->next = NULL;
 }
 
 void poly_merge(poly** p1, poly* p2) {
 	int is_min = 1;
-	while (p2 != NULL) 
-	{
-		poly* monomial = poly_get_monomial(p2->coeff, p2->exp);
-		poly* main_list = *p1;
+	while (p2 != NULL) {
+		poly* list = *p1;
 		poly* prev = NULL;
-		while (main_list != NULL) {
-			if (monomial->exp > main_list->exp) {
-				monomial->next = main_list;
-				main_list = monomial;
+		poly* p2_mono = poly_get_monomial(p2->coeff, p2->exp);
+		while (list) {
+			if (p2_mono->exp > list->exp) {
+				p2_mono->next = list;
+				poly_clone(&list, p2_mono);
 				is_min = 0;
 				break;
 			}
-			else if (monomial->exp == main_list->exp) {
-				main_list->coeff += monomial->coeff;
+			else if (p2_mono->exp == list->exp) {
+				list->coeff += p2_mono->coeff;
 				is_min = 0;
 				break;
 			}
 			else {
-				poly* temp = poly_get_monomial(main_list->coeff, main_list->exp);
+				poly* temp = poly_get_monomial(list->coeff, list->exp);
 				temp->next = prev;
-				prev = temp;
+				poly_clone(&prev, temp);
+				poly_free(temp);
 				is_min = 1;
 			}
-			main_list = main_list->next;
+			list = list->next;
 		}
 		if (prev) {
 			if (is_min)
-				prev->next = monomial;
+				prev->next = p2_mono;
 			else
-				prev->next = main_list;
-			*p1 = prev;
+				prev->next = list;
+			**p1 = *prev;
 		}
 		else {
-			if (main_list) {
-				*p1 = main_list;
+			if (list) {
+				*p1 = list;
 			}
 			else {
-				*p1 = monomial;
+				//*p1->coeff = p2_mono->coeff;
+				*p1 = p2_mono;
+				break;
 			}
 		}
 		p2 = p2->next;
+		//poly_free(list);
+		//poly_free(prev);
+		//poly_free(p2_mono);
 	}
 }
 
-poly* poly_get(const char* input) {//, struct exception e = { 0, E0 }) {
+poly* poly_get(const char* input, exception* exep) {
 	if (input == NULL) {
-		std::cout << "Error: empty line\0";
+		std::cout << "Error: empty line\0"; 
 		return (poly*)NULL;
 	}
-	exeption exept;
-	int sgn = 1, state = 0; //4 conditions: 0 = sgn, 1 = digit, 2 = x, 3 = exp
+	//exeption exept;
+	int sgn = 1;
+	state s = SGN; 
 	poly* result = NULL;
 	poly* temp_monomial = poly_get_monomial(0, 0);
-	char* pEnd;	
+	char* pEnd = NULL;	
 	for (int i = 0; i < strlen(input); ++i) {
 		char symb = input[i];
-		switch (state) {
-		case 0: //sign
+		switch (s) {
+		case SGN:
 			if (symb >= '0' && symb <= '9') {
-				state = 1;
+				s = DIGIT;
 				temp_monomial->coeff = sgn*(int)strtol(input + i, &pEnd, 10);
 				i = pEnd - input;
 				if (input[i] == '\n') {
@@ -130,46 +165,51 @@ poly* poly_get(const char* input) {//, struct exception e = { 0, E0 }) {
 			}
 			else if (symb == '+' || symb == '-') {
 				if (i == 0) {
-					state = 0;
+					s = SGN;
 					sgn = 1 - 2 * (symb == '-');
 				}
-				else
-					ERROR(E3)
+				else {
+					*exep = { i, E3 };
+					RETURN_NULL(result, temp_monomial);
+				}
 			}
 			else if (symb == 'x') {
-				state = 2;
+				s = X;
 				temp_monomial->coeff = sgn * (temp_monomial->coeff + (temp_monomial->coeff == 0));
 			}
 			else if (symb == '^') {
-				ERROR(E1)
+				*exep = { i, E1 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			else {
-				ERROR(E0);
+				*exep = { i, E0 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			break;
 
-		case 1: //digit
+		case DIGIT:
 			if (symb >= '0' && symb <= '9') { 
-				state = 1;
+				s = DIGIT;
 			}			
 			else if (symb == 'x') { 
-				state = 2;
+				s = X;
 			}
 			else if (symb == '+' || symb == '-') { 
-				state = 0;
+				s = SGN;
 				sgn = 1 - 2 * (symb == '-');
 			}
 			else {
-				ERROR(E0)
+				*exep = { i, E0 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			break;
 
-		case 2: //variable
+		case X:
 			if (symb == '^') {
-				state = 3;
+				s = EXP;
 			}
 			else if (symb == '-' || symb == '+') {
-				state = 0;
+				s = SGN;
 				temp_monomial->exp = 1;
 				sgn = 1 - 2 * (symb == '-');
 				poly_merge(&result, temp_monomial);
@@ -178,22 +218,24 @@ poly* poly_get(const char* input) {//, struct exception e = { 0, E0 }) {
 			else if (symb == '\n') {
 				temp_monomial->exp = 1;
 				poly_merge(&result, temp_monomial);
-				return result;
 			}
 			else if (symb == 'x') {
-				ERROR(E4)
+				*exep = { i, E4 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			else if (symb >= '0' && symb <= '9') {
-				ERROR(E1)
+				*exep = { i, E1 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			else {
-				ERROR(E0)
+				*exep = { i, E0 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			break;
 
-		case 3: //exp
+		case EXP:
 			if (symb >= '0' && symb <= '9') {
-				state = 1;
+				s = DIGIT;
 				temp_monomial->exp = (int)strtol(input+i, &pEnd, 10);
 				i = pEnd - input;
 				sgn = 1 - 2 * (input[i] == '-');
@@ -206,29 +248,33 @@ poly* poly_get(const char* input) {//, struct exception e = { 0, E0 }) {
 				temp_monomial = poly_get_monomial(0, 0);
 			}
 			else if (symb == '^') {
-				ERROR(E2)
+				*exep = { i, E2 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			else if (symb == 'x' || symb == '+' || symb == '-'){
-				ERROR(E1)
+				*exep = { i, E1 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			else{
-				ERROR(E0)
+				*exep = { i, E0 };
+				RETURN_NULL(result, temp_monomial);
 			}
 			break;
 		default:
-			ERROR(E0)
+			*exep = { i, E0 };
+			RETURN_NULL(result, temp_monomial);
 			break;
 		}
-	}	
+	}
+	return result;
 }
 
 void poly_print(poly* p) {
-
 	while (p != NULL)
 	{
 		if (p->coeff > 0)
 			printf("+");
-		if (p->coeff != 0)
+		if (p->coeff != 0 && !(p->coeff == 1 && p->exp != 0))
 			printf("%i", p->coeff);
 		if (p->exp != 0)
 			printf("x");
@@ -239,6 +285,7 @@ void poly_print(poly* p) {
 	std::cout << std::endl;
 }
 
+
 poly* poly_add(poly* p1, poly* p2) {
 	poly* result = p1;
 	poly_merge(&result, p2);
@@ -248,10 +295,13 @@ poly* poly_add(poly* p1, poly* p2) {
 poly* poly_multy(poly* p1, poly* p2) {
 	poly* result = (poly*)malloc(sizeof(poly*));
 	result = poly_get_monomial(0, 0);
-	poly* a = p1;
-	while (p1 != NULL) {
-		poly* b = p2;
 
+	while (p1) {
+		while (p2) {
+			poly_merge(&result, poly_get_monomial(p1->coeff*p2->coeff, p1->exp + p2->exp));
+			p2 = p2->next;
+		}
+		p1 = p1->next;
 	}
 	return NULL;
 }
