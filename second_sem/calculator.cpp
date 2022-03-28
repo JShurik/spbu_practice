@@ -161,7 +161,6 @@ char* shuting_yard(char* input) {
 					output[count++] = 'M';
 				}
 			}
-			//output[count] = ' ';
 			count++;
 		}
 	}

@@ -5,7 +5,6 @@ typedef struct stack
 	char data;
 	stack *next;
 } stack;
-
 typedef struct stack_int {
 	int data;
 	stack_int* next;
