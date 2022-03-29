@@ -38,4 +38,9 @@ int main()
 	printf("Enter eleemnts: ");
 	fgets(str, 256, stdin);
 	tree_print(tree_sort(str));
+	
+	printf("Enter number: ");
+	double num;
+	scanf_s("%lf", &num);
+	sb_number(num, get_stern_brocot_tree(20));
 }
