@@ -11,9 +11,21 @@ void tree_free(tnode** tree);
 void add_node(tnode** tree, int node);
 tnode* tree_sort(const char* str);
 
+
 typedef struct sb_tree {
 	int a;
 	int b;
 	struct sb_tree* left;
 	struct sb_tree* right;
 } sbt;
+
+typedef struct sb_fraction {
+	int up_left_a;
+	int up_left_b;
+	int up_right_a;
+	int up_right_b;
+} sbf;
+
+sbt* get_stern_brocot_tree(int n);
+sbt* get_stern_brocot_subtree(int depth, sbf f);
+void sb_number(double r, sbt* tree);
