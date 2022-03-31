@@ -1,11 +1,8 @@
 #pragma once
-typedef struct node {
-	int val;
-	node* next;
-} node;
 
 typedef struct list {
-	node* head;
+	int ver;
+	list* next;
 } list;
 
 typedef struct graph {
@@ -13,8 +10,16 @@ typedef struct graph {
 	list* adj_list;
 } graph;
 
-//graph* graph_init(int n);
-void add_edge(graph** g, int a, int b);
-void del_edge(graph**g, int a, int b);
-void graph_print(graph* g);
+
+
+list* getLast(list* last);
+void list_pushEmpty(list** l, int n);
+void list_pushBack(list* l, int n);
+
 void graph_free(graph* g);
+graph* graph_init(int n);
+void add_edge(graph** g, int a, int b);
+void del_edge(graph** g, int a, int b);
+void graph_print(graph* g);
+
+

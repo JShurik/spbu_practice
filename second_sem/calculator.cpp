@@ -1,6 +1,8 @@
 #include <iostream>
 #include "calculator.h"
 
+//Исправить ошибку с GCD
+
 void push(stack** stk, char input) {
 	stack* new_ = (stack*)malloc(sizeof(stack*));
 	new_->data = input;
@@ -114,11 +116,24 @@ char* shuting_yard(char* input) {
 			s += 2;
 		}
 		else if (*s == ',') {
-			output[count] = ' ';
-			count++;
-			//while (opers->data != '(') {
-
-			//}
+			//output[count] = ' ';
+			//count++;
+			while (opers->data != '(') { ///!!!!
+				char t = pop(&opers);
+				output[count] = ' ';
+				count++;
+				output[count] = t;
+				count++;
+				if (t == 'G') {
+					output[count++] = 'C';
+					output[count++] = 'D';
+				}
+				if (t == 'L') {
+					output[count++] = 'C';
+					output[count++] = 'M';
+				}
+				if (opers == NULL) break;
+			}
 		}
 		else if (*s == ')') {
 			if (opers->data == '(') pop(&opers);

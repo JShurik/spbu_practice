@@ -2,6 +2,7 @@
 #include "calculator.h"
 #include "poly.h"
 #include "trees.h"
+#include "graph.h"
 
 using namespace std;
 
@@ -13,9 +14,12 @@ int main()
 	/*printf("Enter expression: ");
 	fgets(str, 256, stdin);
 	char* pol_form = shuting_yard(str);
-	int res = calculation(pol_form);
-	cout << pol_form << endl;
-	cout << res << endl;*/
+	if (pol_form) {
+		int res = calculation(pol_form);
+		cout << pol_form << endl;
+		cout << res << endl;
+	}*/
+
 
 	/*cout << "Enter polynom: ";
 	fgets(str, 256, stdin);
@@ -35,12 +39,25 @@ int main()
 	printf("Multy: ");
 	poly_print(poly_multy(poly1, poly2));*/
 
-	printf("Enter eleemnts: ");
+	printf("Enter elements: ");
 	fgets(str, 256, stdin);
 	tree_print(tree_sort(str));
 	
-	printf("Enter number: ");
-	double num;
-	scanf_s("%lf", &num);
-	sb_number(num, get_stern_brocot_tree(20));
+	double nn = 0;
+	printf("Number: ");
+	scanf_s("%lf", &nn); 
+	sb_number(nn, get_stern_brocot_tree(22));
+
+	
+	/*int n = 0;
+	printf("Number of vertexes: ");
+	scanf("%i", n);
+	graph* gr = graph_init(n);
+	while (n > 0) {
+		n--;
+	}
+	add_edge(&gr, 1, 2);
+	add_edge(&gr, 2, 3);
+	add_edge(&gr, 3, 4);
+	graph_print(gr);*/
 }
