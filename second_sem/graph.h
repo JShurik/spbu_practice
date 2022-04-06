@@ -21,5 +21,3 @@ graph* graph_init(int n);
 void add_edge(graph** g, int a, int b);
 void del_edge(graph** g, int a, int b);
 void graph_print(graph* g);
-
-

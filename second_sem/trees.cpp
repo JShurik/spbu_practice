@@ -4,8 +4,17 @@
 void tree_print(tnode* tree) {
 	if (tree != NULL) {
 		tree_print(tree->left);
-		printf("%i ", tree->data); //делать массив из  отсортированных элементов
+		printf("%i ", tree->data);
 		tree_print(tree->right);
+	}
+	return;
+}
+void tree_to_array(tnode* tree, int* arr, int * id) {
+	if (tree != NULL) {
+		tree_to_array(tree->left, arr, id);
+		arr[*id] = tree->data;
+		(*id) += 1;
+		tree_to_array(tree->right, arr, id);
 	}
 	return;
 }

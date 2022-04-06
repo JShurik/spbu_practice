@@ -1,8 +1,6 @@
 #include <iostream>
 #include "calculator.h"
 
-//Исправить ошибку с GCD
-
 void push(stack** stk, char input) {
 	stack* new_ = (stack*)malloc(sizeof(stack*));
 	new_->data = input;
@@ -113,11 +111,11 @@ char* shuting_yard(char* input) {
 		}
 		else if ((*s == 'G' && *(s+1) == 'C' && *(s+2) == 'D') || (*s == 'L' && *(s + 1) == 'C' && *(s + 2) == 'M')) {
 			push(&opers, *s);
-			s += 2;
+			s += 3;
 		}
 		else if (*s == ',') {
-			//output[count] = ' ';
-			//count++;
+			output[count] = ' ';
+			count++;
 			while (opers->data != '(') { ///!!!!
 				char t = pop(&opers);
 				output[count] = ' ';
@@ -136,24 +134,32 @@ char* shuting_yard(char* input) {
 			}
 		}
 		else if (*s == ')') {
-			if (opers->data == '(') pop(&opers);
-			while (opers->data != '(') { ///!!!!
-				char t = pop(&opers);
-				output[count] = ' ';
-				count++;
-				output[count] = t;
-				count++;
-				if (t == 'G') {
-					output[count++] = 'C';
-					output[count++] = 'D';
+			if (opers) {
+				if (opers->data == '(') { 
+					pop(&opers); 
 				}
-				if (t == 'L') {
-					output[count++] = 'C';
-					output[count++] = 'M';
+				while (opers->data != '(') { ///!!!!
+					char t = pop(&opers);
+					output[count] = ' ';
+					count++;
+					output[count] = t;
+					count++;
+					if (t == 'G') {
+						output[count++] = 'C';
+						output[count++] = 'D';
+					}
+					if (t == 'L') {
+						output[count++] = 'C';
+						output[count++] = 'M';
+					}
+					if (opers == NULL) break;
 				}
-				if (opers == NULL) break;
+				if (opers)
+					if (opers->data == '(') pop(&opers);
 			}
+			
 		}
+		else if (*s == ' ') { }
 		else {
 			printf("Error: Unknown symbols");
 			return NULL;

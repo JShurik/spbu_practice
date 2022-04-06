@@ -78,5 +78,3 @@ void graph_print(graph* g) {
 		printf("\n");
 	}
 }
-
-

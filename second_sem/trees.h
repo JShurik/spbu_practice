@@ -10,7 +10,7 @@ void tree_print(tnode* tree);
 void tree_free(tnode** tree);
 void add_node(tnode** tree, int node);
 tnode* tree_sort(const char* str);
-
+void tree_to_array(tnode *tree, int* arr, int *id);
 
 typedef struct sb_tree {
 	int a;
