@@ -12,11 +12,11 @@ typedef struct stack_int {
 } stack_int;
 
 void push(stack** stk, char input);
-void stack_free(stack* stk); 
+void stack_free(stack* stk);
 char pop(stack** stk);
 
 void push_i(stack_int** stk, int input);
-void stack_free_i(stack_int* stk); 
+void stack_free_i(stack_int* stk);
 int pop_i(stack_int** stk);
 
 char* shuting_yard(char* input);

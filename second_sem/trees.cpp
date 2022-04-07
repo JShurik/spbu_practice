@@ -13,7 +13,7 @@ void tree_to_array(tnode* tree, int* arr, int * id) {
 	if (tree != NULL) {
 		tree_to_array(tree->left, arr, id);
 		arr[*id] = tree->data;
-		(*id) += 1;
+		(*id)++;
 		tree_to_array(tree->right, arr, id);
 	}
 	return;

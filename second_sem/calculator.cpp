@@ -2,7 +2,7 @@
 #include "calculator.h"
 
 void push(stack** stk, char input) {
-	stack* new_ = (stack*)malloc(sizeof(stack*));
+	stack* new_ = (stack*)malloc(sizeof(stack));
 	new_->data = input;
 	if (stk == NULL)
 		*stk = new_;
@@ -27,7 +27,7 @@ char pop(stack** stk) {
 		free(new_);
 		return res;
 	}
-	std::cout << "Steck is empty\0"; 
+	std::cout << "Steck is empty\0";
 	return NULL;
 }
 
@@ -61,7 +61,7 @@ int pop_i(stack_int** stk) {
 	return NULL;
 }
 
-int compare_opers(char oper1, char oper2) { 
+int compare_opers(char oper1, char oper2) {
 	if (oper1 == '(' || oper2 == '(')
 		return 1;
 	if (oper1 == '*' || oper1 == '/') {
@@ -76,12 +76,12 @@ int compare_opers(char oper1, char oper2) {
 		else if (oper2 == '+' || oper2 == '-')
 			return 0;
 	}
-	
+
 }
 
 char* shuting_yard(char* input) {
-	char* output = (char*)malloc(sizeof(char)*strlen(input)+4);
-	stack* opers = (stack*)malloc(sizeof(stack*));
+	char* output = (char*)malloc(sizeof(char)*strlen(input) + 4);
+	stack* opers = (stack*)malloc(sizeof(stack));
 	opers = NULL;
 	int count = 0;
 	char* s = (char*)input;
@@ -94,8 +94,8 @@ char* shuting_yard(char* input) {
 			output[count] = ' ';
 			count++;
 			if (opers) {
-				if (compare_opers(*s, opers->data)-1) {
-					while (compare_opers(*s, opers->data)-1 && opers->data != '(') {
+				if (compare_opers(*s, opers->data) - 1) {
+					while (compare_opers(*s, opers->data) - 1 && opers->data != '(') {
 						output[count] = pop(&opers);
 						count++;
 						output[count] = ' ';
@@ -109,9 +109,9 @@ char* shuting_yard(char* input) {
 		else if (*s == '(') {
 			push(&opers, *s);
 		}
-		else if ((*s == 'G' && *(s+1) == 'C' && *(s+2) == 'D') || (*s == 'L' && *(s + 1) == 'C' && *(s + 2) == 'M')) {
+		else if ((*s == 'G' && *(s + 1) == 'C' && *(s + 2) == 'D') || (*s == 'L' && *(s + 1) == 'C' && *(s + 2) == 'M')) {
 			push(&opers, *s);
-			s += 3;
+			s += 2;
 		}
 		else if (*s == ',') {
 			output[count] = ' ';
@@ -135,8 +135,8 @@ char* shuting_yard(char* input) {
 		}
 		else if (*s == ')') {
 			if (opers) {
-				if (opers->data == '(') { 
-					pop(&opers); 
+				if (opers->data == '(') {
+					pop(&opers);
 				}
 				while (opers->data != '(') { ///!!!!
 					char t = pop(&opers);
@@ -157,9 +157,9 @@ char* shuting_yard(char* input) {
 				if (opers)
 					if (opers->data == '(') pop(&opers);
 			}
-			
+
 		}
-		else if (*s == ' ') { }
+		else if (*s == ' ') {}
 		else {
 			printf("Error: Unknown symbols");
 			return NULL;
@@ -211,13 +211,13 @@ int calculation(char* input) {
 			int b = pop_i(&nums);
 			switch (*s)
 			{
-			case '+': 
+			case '+':
 				result = b + a; s++;
 				break;
-			case '-': 
+			case '-':
 				result = b - a; s++;
 				break;
-			case '*': 
+			case '*':
 				result = b * a; s++;
 				break;
 			case '/':
@@ -226,7 +226,7 @@ int calculation(char* input) {
 			case 'L':
 				result = (b*a) / gcd(a, b); s += 3;
 				break;
-			case 'G': 
+			case 'G':
 				result = gcd(a, b); s += 3;
 				break;
 			}

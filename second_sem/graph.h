@@ -18,6 +18,7 @@ void list_pushBack(list* l, int n);
 
 void graph_free(graph* g);
 graph* graph_init(int n);
-void add_edge(graph** g, int a, int b);
-void del_edge(graph** g, int a, int b);
+void add_arc(graph* g, int a, int b);
+void add_edge(graph* g, int a, int b);
+void del_edge(graph* g, int a, int b);
 void graph_print(graph* g);

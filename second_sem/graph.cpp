@@ -11,6 +11,15 @@ list* getLast(list* last) {
 	return last;
 }
 
+void list_free(list** l) {
+	list *t;
+	while (l) {
+		t = (*l)->next;
+		free(*l);
+		*l = t;
+	}
+}
+
 void list_pushEmpty(list** l, int n) {
 	if (*l == NULL) {
 		*l = (list*)malloc(sizeof(list));
@@ -29,7 +38,9 @@ void list_pushBack(list* l, int n) {
 	return;
 }
 
-void graph_free(graph* g);
+void graph_free(graph* g) {
+
+}
 
 graph* graph_init(int n) {
 	graph* g = (graph*)malloc(sizeof(graph));
@@ -37,42 +48,80 @@ graph* graph_init(int n) {
 	g->adj_list = (list*)malloc(sizeof(list) * n);
 	while (n > 0) {
 		list* temp = NULL;
-		list_pushEmpty(&temp, n);
-		g->adj_list[n - 1] = *temp;
+		list_pushEmpty(&temp, -1);
+		g->adj_list[g->n - n] = *temp;
 		n--;
 	}
 	return g;
 }
 
-void add_edge(graph** g, int a, int b) {
-	if (*g == NULL) {
-		*g = graph_init(2);
+void add_arc(graph* g, int a, int b) {
+	if (g == NULL) {
+		printf("Empty graph\n");
+		return;
 	}
-	if (a <= (*g)->n || b <= (*g)->n) {
-		list temp = (*g)->adj_list[a - 1];
+	if (a > g->n || a < 0 || b > g->n || b < 0) {
+		printf("Incorrect input\n");
+		return;
+	}
+	list temp = (g)->adj_list[a];
+	if (temp.ver == -1) {
+		temp.ver = b;
+	}
+	else 
 		list_pushBack(&temp, b);
-		(*g)->adj_list[a - 1] = temp;
-
-		temp = (*g)->adj_list[b - 1];
-		list_pushBack(&temp, a);
-		(*g)->adj_list[b - 1] = temp;
-	}
-
+	(g)->adj_list[a] = temp;
 }
 
-void del_edge(graph** g, int a, int b) {
+void add_edge(graph* g, int a, int b) {
+	add_arc(g, a, b);
+	add_arc(g, b, a);
+}
 
+void del_arc(graph* g, int a, int b) {
+	if (g == NULL) {
+		printf("Empty graph\n");
+		return;
+	}
+	if (a > g->n || a < 0 || b > g->n || b < 0) {
+		printf("Incorrect input\n");
+		return;
+	}
+	list* temp = g->adj_list + a;
+	if (temp->ver == b) {
+		temp = temp->next;
+		*(g->adj_list + a) = *temp;
+		return;
+	}
+	while (temp->next->ver != b) {
+		temp = temp->next;
+		if (temp->next == NULL) break;
+	}
+	if (temp == NULL || temp->next == NULL) {
+		printf("Error\n"); //vertex dosent exist
+		return;
+	}
+	temp->next = temp->next->next;
+	
+}
+
+void del_edge(graph* g, int a, int b) {
+	del_arc(g, a, b);
+	del_arc(g, b, a);
 }
 
 void graph_print(graph* g) {
 	list* temp = g->adj_list;
 	for (int i = 0; i < g->n; ++i) {
-		printf("%i: ", i + 1);
+		printf("%i: ", i);
 		list* vers = temp;
-		while (vers->next != NULL) {
+		while (vers) {
+			if (vers->ver != -1)
+				printf("%i", vers->ver);
+			else
+				printf("No connection");
+			if (vers->next) printf(", ");
 			vers = vers->next;
-			printf("%i", vers->ver);
-			if (vers->next != NULL) printf(", ");
 		}
 		temp++;
 		printf("\n");
