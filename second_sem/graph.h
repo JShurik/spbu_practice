@@ -7,7 +7,7 @@ typedef struct list {
 
 typedef struct graph {
 	int n;
-	list* adj_list;
+	list** adj_list;
 } graph;
 
 
@@ -22,3 +22,6 @@ void add_arc(graph* g, int a, int b);
 void add_edge(graph* g, int a, int b);
 void del_edge(graph* g, int a, int b);
 void graph_print(graph* g);
+
+graph* graph_get_ff(const char* input);
+void graph_print_if(const char* output);
