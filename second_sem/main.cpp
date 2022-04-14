@@ -14,9 +14,17 @@ int main()
 	add_edge(gr, 1, 2);
 	add_edge(gr, 3, 2);
 	add_edge(gr, 4, 2);
+	add_edge(gr, 4, 2);
 	add_edge(gr, 0, 1);
 	graph_print(gr);
+	del_edge(gr, 1, 0);
 	del_edge(gr, 2, 3);
+	printf("\n");
+	graph_print(gr);
+	graph_free(gr);
+	printf("\n");
+	graph* grr = graph_get_ff("input.txt");
+	graph_print(grr);
 	//Ex 1-4
 	/*printf("Enter expression: ");
 	fgets(str, 512, stdin);
