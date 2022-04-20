@@ -12,9 +12,11 @@ typedef struct graph {
 
 
 
-list* getLast(list* last);
+list* getLast(list* last, int n);
 void list_pushEmpty(list** l, int n);
 void list_pushBack(list* l, int n);
+void list_push(list* l, int n);
+int list_pop_up(list** l);
 
 void graph_free(graph* g);
 graph* graph_init(int n);
@@ -23,5 +25,7 @@ void add_edge(graph* g, int a, int b);
 void del_edge(graph* g, int a, int b);
 void graph_print(graph* g);
 
-graph* graph_get_ff(const char* input);
-void graph_print_if(const char* output);
+int bipart_chek(graph* g, int* color);
+
+graph* graph_read(const char* input);
+void graph_write(graph* g, const char* output);

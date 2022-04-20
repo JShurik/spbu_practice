@@ -15,7 +15,6 @@ list* getLast(list* last, int n) {
 	if (last->ver == n) return NULL;
 	return last;
 }
-
 void list_pushEmpty(list** l, int n) {
 	if (*l == NULL) {
 		*l = (list*)malloc(sizeof(list));
@@ -24,7 +23,6 @@ void list_pushEmpty(list** l, int n) {
 	}
 	return;
 }
-
 void list_pushBack(list* l, int n) {
 	list* last = getLast(l, n);
 	if (last) {
@@ -35,6 +33,27 @@ void list_pushBack(list* l, int n) {
 	}
 	return;
 }
+void list_push(list* l, int n) {
+	list* new_ = (list*)malloc(sizeof(list));
+	new_->ver = n;
+	if (l == NULL)
+		l = new_;
+	else
+		new_->next = l; l = new_;
+}
+int list_pop_up(list** l) {
+	if (*l != NULL) {
+		list* new_ = *l;
+		*l = new_->next;
+		int res = new_->ver;
+		new_ = NULL;
+		free(new_);
+		return res;
+	}
+	std::cout << "Steck is empty\n";
+	return NULL;
+}
+
 
 void graph_free(graph* g) {
 	list* ptr = g->adj_list[0];
@@ -67,10 +86,10 @@ void add_arc(graph* g, int a, int b) {
 		printf("Incorrect input\n");
 		return;
 	}
-	list *temp = (g)->adj_list[a];
+	list* temp = (g)->adj_list[a];
 	if (!temp)
 		list_pushEmpty(&temp, b);
-	else 
+	else
 		list_pushBack(temp, b);
 	(g)->adj_list[a] = temp;
 }
@@ -105,7 +124,7 @@ void del_arc(graph* g, int a, int b) {
 		return;
 	}
 	temp->next = temp->next->next;
-	
+
 }
 
 void del_edge(graph* g, int a, int b) {
@@ -126,9 +145,32 @@ void graph_print(graph* g) {
 	}
 }
 
+//====== bipart check
+
+int bipart_chek_dfs(const graph* g, int* color) {
+	//int* first_part = (int*)malloc(sizeof(int));
+	//int* second_part = (int*)malloc(sizeof(int));
+
+	for (int i = 0; i < g->n; ++i) {
+		if (color[i] == 0) {
+			color[i] = 1;
+			//list* vers = g->adj_list[i];
+
+			list* stack = NULL;
+			list_pushEmpty(&stack, i);
+			
+
+			while (stack) {
+				int v = list_pop_up(&stack);
+
+			}
+		}
+	}
+}
 
 
-graph* graph_get_ff(const char* path) {
+//====== files
+graph* graph_read(const char* path) {
 	FILE* f = NULL;
 	fopen_s(&f, path, "r");
 	if (f) {
@@ -141,12 +183,15 @@ graph* graph_get_ff(const char* path) {
 		fscanf_s(f, "%c", &trash);
 		graph* result = graph_init(n);
 		for (int i = 0; i < result->n; ++i) {
-			char* str = (char*)malloc(n*3);
+			char* str = (char*)malloc(n * 3);
 			int j = 0;
-			while (*(str+j-1) != '\n') {
-				fscanf_s(f, "%c", (str + j)); 
+			while (*(str + j - 1) != '\n') {
+				if (fscanf_s(f, "%c", (str + j)) == EOF) {
+					*(str + j) = '\n';
+					break;
+				}
 				j++;
-			}	
+			}
 			while (*str != ':') str++;
 			str++;
 			while (*str != '\n') {
@@ -156,7 +201,7 @@ graph* graph_get_ff(const char* path) {
 					list_pushBack(result->adj_list[i], ver);
 				else
 					list_pushEmpty(&result->adj_list[i], ver);
-				
+
 			}
 
 		}
@@ -167,7 +212,20 @@ graph* graph_get_ff(const char* path) {
 		return NULL;
 	}
 }
-
-void graph_print_if(const char* path) {
-
+void graph_write(graph* g, const char* path) {
+	FILE* f = NULL;
+	fopen_s(&f, path, "w");
+	if (f) {
+		fprintf(f, "%i\n", g->n);
+		for (int i = 0; i < g->n; ++i) {
+			fprintf(f, "%i: ", i);
+			list* vers = g->adj_list[i];
+			while (vers) {
+				fprintf(f, "%i", vers->ver);
+				if (vers->next) fprintf(f, ", ");
+				vers = vers->next;
+			}
+			fprintf(f, "\n");
+		}
+	}
 }
