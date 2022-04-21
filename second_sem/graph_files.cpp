@@ -8,12 +8,10 @@ graph* graph_read(const char* path) {
 	fopen_s(&f, path, "r");
 	if (f) {
 		int n = 0;
-		char trash = '\n';
 		if (fscanf_s(f, "%d", &n) == EOF) {
 			printf("Error: unable to read the graph");
 			return NULL;
 		}
-		fscanf_s(f, "%c", &trash);
 		graph* result = graph_init(n);
 		for (int i = 0; i < result->n; ++i) {
 			char* str = (char*)malloc(n * 3);
