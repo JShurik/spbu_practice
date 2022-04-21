@@ -8,14 +8,14 @@ int change_color(int col) {
 		return 1;
 }
 
-int bipart_check_bfs(graph* g, int* color) { //1 - bipat, 0 - non bipart
-	color = (int*)calloc(g->n, sizeof(int));
+int* bipart_check_bfs(graph* g) { //1 - bipat, 0 - non bipart
+	int* color = (int*)calloc(g->n, sizeof(int));
 	int start_color = 1;
 	for (int i = 0; i < g->n; ++i) {
 		if (color[i] == 0) {
 			color[i] = start_color;
 			list* queue = NULL;
-			list_pushEmpty(&queue, i);
+			list_pushEmpty(&queue, i); //free
 			while (queue) {
 				int start_ver = list_pop_up(&queue);
 				start_color = change_color(color[start_ver]);
@@ -28,7 +28,8 @@ int bipart_check_bfs(graph* g, int* color) { //1 - bipat, 0 - non bipart
 					}
 					else {
 						if (color[next_ver] == color[start_ver]) {
-							return 0;
+							free(color);
+							return NULL;
 						}
 					}
 					vers = vers->next;
@@ -44,7 +45,7 @@ int bipart_check_bfs(graph* g, int* color) { //1 - bipat, 0 - non bipart
 			printf("%i: second part\n", i);
 	}
 	//==
-	return 1;
+	return color;
 }
 
 int bipart_check_dfs(graph* g, int* color) {
