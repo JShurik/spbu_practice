@@ -7,8 +7,7 @@ using namespace std;
 
 int main()
 {
-	char* str = (char*)malloc(sizeof(char*));
-	char* str2 = (char*)malloc(sizeof(char*));
+	
 
 	graph* gr = graph_init(5);
 	add_edge(gr, 1, 2);
@@ -23,8 +22,30 @@ int main()
 	graph_print(gr);
 	graph_free(gr);
 	printf("\n");
-	graph* grr = graph_get_ff("input.txt");
+
+
+	graph* grr = graph_read("input.txt");
+	//graph_write(grr, "output.txt");
+
+
 	graph_print(grr);
+	printf("\n");
+	int* color = (int*)malloc(sizeof(int));
+	if (bipart_check_bfs(grr, color)) {
+		printf("Graph is bipartial\n");
+	}
+	else
+		printf("Graph is not bipartial\n");
+	
+
+	if (bipart_check_dfs(grr, color))
+		printf("Graph is bipartial\n");
+	else
+		printf("Graph is not bipartial\n");
+
+
+	//char* str = (char*)malloc(sizeof(char*));
+	//char* str2 = (char*)malloc(sizeof(char*));
 	//Ex 1-4
 	/*printf("Enter expression: ");
 	fgets(str, 512, stdin);
