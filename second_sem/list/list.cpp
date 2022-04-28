@@ -1,6 +1,16 @@
 #include <iostream>
 #include "list.h"
 
+void free_list(list* l) {
+	list* t;
+	while (l) {
+		t = l->next;
+		free(l);
+		l = t;
+	}
+	return;
+}
+
 list* getLast(list* last, int n) {
 	if (last == NULL) {
 		return NULL;

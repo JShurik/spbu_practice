@@ -5,6 +5,7 @@ typedef struct list {
 	list* next;
 } list;
 
+void free_list(list* l);
 
 list* getLast(list* last, int n);
 void list_pushEmpty(list** l, int n);
