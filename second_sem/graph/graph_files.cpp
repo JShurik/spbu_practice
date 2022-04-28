@@ -13,14 +13,16 @@ graph* graph_read(const char* path) {
 			return NULL;
 		}
 		graph* result = graph_init(n);
-		for (int i = 0; i < result->n; ++i) {
+		char trash = '\n';
+		fscanf_s(f, "%c", &trash);
+		for (int i = 0; i < n; ++i) {
 			char* str = (char*)malloc(n * 3);
 			fgets(str, n * 3, f);
 			while (*str != ':') str++;
 			str++;
 			while (*str) {
-				if (*str > (char)9 || *str < (char)0) str++;
-				add_arc(result, i, strtol(str, &str, 10));
+				if (*str > '9' || *str < '0') str++;
+				else add_arc(result, i, strtol(str, &str, 10));
 			}
 		}
 		return result;
