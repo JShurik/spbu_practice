@@ -1,11 +1,6 @@
 #include <iostream>
 #include "graph.h"
 
-typedef struct stack {
-	list* data;
-	stack* next;
-} stack;
-
 int change_color(int col) {
 	if (col == 1)
 		return 2;
@@ -88,56 +83,11 @@ int* bipart_check_dfs(graph* g) {
 	return color;
 }
 
-int vertex_check(graph* g, list** stack, int* color, int current) {
-	if (color[current] == 0) {
-		color[current] = 1;
-		list* vertexes = g->adj_list[current];
-		if (vertexes) {
-			while (vertexes) {
-				if (!vertex_check(g, stack, color, vertexes->ver)) 
-					return 0;
-				vertexes = vertexes->next;
-			}
-		}
-		color[current] = 2;
-		if (!stack) list_pushEmpty(&stack, current);
-		else list_push(&stack, current);
-	}
-	else if (color[current] == 1) {
-		printf("Error: cycle has been found\n");
-		return 0;
-	}
-	else if (color[current] == 2) {
-		return 1;
-	}
-}
-
-list** topological_sort(graph* g) {
-	list** result = (list**)malloc(sizeof(list)*g->n);
-	int* color = (int*)calloc(g->n, sizeof(int));
-	list* stack = NULL;
-	for (int i = 0; i < g->n; ++i) {
-		if (color[i] == 0) {
-			if (g->adj_list[i]) {
-				if (!vertex_check(g, &stack, color, i)) 
-					return NULL;
-			}
-			color[i] = 2;
-			if (!stack) list_pushEmpty(&stack, i);
-			else list_push(&stack, i);
-		}
-	}
-
-	free_list(stack);
-	free(color);
-	return result;
-}
-
 void print_parts(int* color) {
 	int* color_copy = color;
 	while (color_copy) {
 		if (*color_copy == 1)
-			printf("%i: first part\n", color_copy- color);
+			printf("%i: first part\n", color_copy - color);
 		else if (*color_copy == 2)
 			printf("%i: second part\n", color_copy - color);
 		else
