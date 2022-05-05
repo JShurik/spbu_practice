@@ -25,27 +25,7 @@ int vertex_check(graph* g, list** stack, int* color, int current) {
 	}
 }
 
-int num_deep(list* stack, int num) {
-	int deep = 0;
-	while (stack->ver != num) {
-		deep++;
-		stack = stack->next;
-	}
-	return deep;
-}
-
-void list_assign(list** target, list* sourse) {
-	if (sourse) {
-		list_pushEmpty(target, sourse->ver);
-		sourse = sourse->next;
-		while (sourse) {
-			list_pushBack(target, sourse->ver);
-			sourse = sourse->next;
-		}
-	}
-}
-
-list** topological_sort(graph* g) {
+int* topological_sort(graph* g) {
 	int* color = (int*)calloc(g->n, sizeof(int));
 	list* stack = NULL;
 	for (int i = 0; i < g->n; ++i) {
@@ -60,21 +40,33 @@ list** topological_sort(graph* g) {
 			}
 		}
 	}
-	list* stack_copy = stack;
-	list** result = (list**)malloc(sizeof(list) * g->n);
-	for (int i = 0; i < g->n; ++i)
-		result[i] = NULL;
+	int* result = (int*)malloc(g->n);
 	for (int i = 0; i < g->n; ++i) {
-		int curr = stack_copy->ver;
-		list_assign(&result[i], g->adj_list[curr]);
+		result[i] = list_pop_up(&stack);
+	}
+	return result;
+}
+
+int deep(int* arr, int n) {
+	int* arr_copy = arr;
+	while (arr) {
+		if (n == *arr)
+			return arr - arr_copy;
+		arr++;
+	}
+}
+
+list** change_vertexes(int* order, graph* g) {
+	list** result = (list**)malloc((g)->n);
+	for (int i = 0; i < (g)->n; ++i)
+		result[i] = NULL;
+	for (int i = 0; i < (g)->n; ++i) {
+		list_assign(&result[i], (g)->adj_list[order[i]]);
 		list* tmp = result[i];
 		while (tmp) {
-			tmp->ver = num_deep(stack, tmp->ver);
+			tmp->ver = deep(order, tmp->ver);
 			tmp = tmp->next;
 		}
-		stack_copy = stack_copy->next;
 	}
-	free_list(stack);
-	free(color);
 	return result;
 }

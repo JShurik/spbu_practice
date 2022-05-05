@@ -17,7 +17,10 @@ int* bipart_check_bfs(graph* g);
 int* bipart_check_dfs(graph* g);
 void print_parts(int* color);
 
-list** topological_sort(graph* g);
+int* topological_sort(graph* g);
+list** change_vertexes(int* order, graph* g);
+
+int** strongly_connected_comps(graph* g);
 
 graph* graph_read(const char* input);
 void graph_write(graph* g, const char* output);
