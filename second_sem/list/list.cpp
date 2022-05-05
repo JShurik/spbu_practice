@@ -68,3 +68,14 @@ int list_pop_up(list** l) {
 	std::cout << "Steck is empty\n";
 	return NULL;
 }
+
+void list_assign(list** target, list* sourse) {
+	if (sourse) {
+		list_pushEmpty(target, sourse->ver);
+		sourse = sourse->next;
+		while (sourse) {
+			list_pushBack(target, sourse->ver);
+			sourse = sourse->next;
+		}
+	}
+}
