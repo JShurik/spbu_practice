@@ -13,11 +13,9 @@ int vertex_check(graph* g, list** stack, int* color, int current) {
 			}
 		}
 		color[current] = 2;
-		if (!(*stack)) list_pushEmpty(stack, current);
-		else list_push(stack, current);
+		list_push(stack, current);
 	}
 	else if (color[current] == 1) {
-		printf("Error: cycle has been found\n");
 		return 0;
 	}
 	else if (color[current] == 2) {
@@ -36,7 +34,7 @@ int* topological_sort(graph* g) {
 			}
 			if (!stack) {
 				color[i] = 2;
-				list_pushEmpty(&stack, i);
+				list_push(&stack, i);
 			}
 		}
 	}
