@@ -34,7 +34,7 @@ void list_pushEmpty(list** l, int n) {
 	return;
 }
 
-void list_pushBack(list** l, int n) {
+void listPushBack(list** l, int n) {
 	list* last = getLast(*l, n);
 	if (last) {
 		list* temp = (list*)malloc(sizeof(list));
@@ -47,13 +47,18 @@ void list_pushBack(list** l, int n) {
 	return;
 }
 
-void list_push(list** l, int n) {
-	list* new_ = (list*)malloc(sizeof(list));
-	new_->ver = n;
-	if (*l == NULL)
-		*l = new_;
+void listPushUp(list** l, int n) {
+	if (*l) {
+		list* new_ = (list*)malloc(sizeof(list));
+		new_->ver = n;
+		if (*l == NULL)
+			*l = new_;
+		else
+			new_->next = *l; *l = new_;
+	}
 	else
-		new_->next = *l; *l = new_;
+		list_pushEmpty(l, n);
+
 }
 
 int list_pop_up(list** l) {
@@ -74,7 +79,7 @@ void list_assign(list** target, list* sourse) {
 		list_pushEmpty(target, sourse->ver);
 		sourse = sourse->next;
 		while (sourse) {
-			list_pushBack(target, sourse->ver);
+			listPushBack(target, sourse->ver);
 			sourse = sourse->next;
 		}
 	}
