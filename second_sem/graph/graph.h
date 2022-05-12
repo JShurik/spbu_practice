@@ -26,5 +26,6 @@ void print_parts(int* color);
 int* topological_sort(graph* g);
 list** change_vertexes(int* order, graph* g);
 
-int** tarjan_scc(graph* g);
-int** scc(graph* g);
+int* tarjan_scc(graph* g);
+int* scc(graph* g);
+void printComponents(int* components);

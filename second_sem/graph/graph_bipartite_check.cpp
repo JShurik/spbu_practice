@@ -24,7 +24,7 @@ int* bipart_check_bfs(graph* g) { //1 - bipat, 0 - non bipart
 					int next_ver = vers->ver;
 					if (color[next_ver] == 0) {
 						color[next_ver] = start_color;
-						list_pushBack(&queue, next_ver);
+						listPushBack(&queue, next_ver);
 					}
 					else {
 						if (color[next_ver] == color[start_ver]) {
@@ -66,7 +66,7 @@ int* bipart_check_dfs(graph* g) {
 						next_ver = vers->ver;
 					}
 					if (color[next_ver] == 0) {
-						list_push(&stack, next_ver);
+						listPushUp(&stack, next_ver);
 						color[next_ver] = start_color;
 					}
 					else {

@@ -33,10 +33,7 @@ void add_arc(graph* g, int a, int b) {
 		return;
 	}
 	list* temp = (g)->adj_list[a];
-	if (!temp)
-		list_pushEmpty(&temp, b);
-	else
-		list_pushBack(&temp, b);
+	listPushBack(&temp, b);
 	(g)->adj_list[a] = temp;
 }
 

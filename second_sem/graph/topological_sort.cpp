@@ -13,7 +13,7 @@ int vertex_check(graph* g, list** stack, int* color, int current) {
 			}
 		}
 		color[current] = 2;
-		list_push(stack, current);
+		listPushUp(stack, current);
 	}
 	else if (color[current] == 1) {
 		return 0;
@@ -34,7 +34,7 @@ int* topological_sort(graph* g) {
 			}
 			if (!stack) {
 				color[i] = 2;
-				list_push(&stack, i);
+				listPushUp(&stack, i);
 			}
 		}
 	}
