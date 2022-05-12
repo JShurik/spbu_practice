@@ -19,12 +19,14 @@ int main()
 		printf("graph is not bipartial\n");
 	}
 
-	if (topological_sort(g)) {
-		g->adj_list = change_vertexes(topological_sort(g), g);
+	int* order = topological_sort(g);
+	if (order) {
+		g->adj_list = change_vertexes(order, g);
 		graph_print(g);
 	}
-	else 
+	else
 		printf("Error: cycle has been found\n");
 
 	tarjan_scc(g);
+	scc(g);
 }
