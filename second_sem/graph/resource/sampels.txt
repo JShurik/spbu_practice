@@ -68,3 +68,8 @@ test graphs
 2: 0
 3: 4
 4: 3
+
+============ 2SAT
+(~x1Vx3)&(~x3V~x1)&(x1Vx2)&(~x2Vx1) (no solutions)
+
+(x1Vx2)&(x1Vx3)&(~x2Vx3)&(~x2Vx1) 
