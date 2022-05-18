@@ -28,4 +28,9 @@ list** change_vertexes(int* order, graph* g);
 
 int* tarjan_scc(graph* g);
 int* scc(graph* g);
-void printComponents(int* components);
+
+//2SAT
+int countVariables(char* expression);
+graph* readExpression(char* expression);
+int* solveExpression(graph* expression);
+void printSolution(int* result, int numberOfVars);
