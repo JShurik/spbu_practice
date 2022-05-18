@@ -7,26 +7,39 @@ using namespace std;
 
 int main()
 {
-	graph* g = graph_read("input.txt");
-	graph_print(g);
-	graph_write(g, "output.txt");
+	//graph* g = graph_read("input.txt");
+	//graph_print(g);
+	//graph_write(g, "output.txt");
 
-	if (bipart_check_bfs(g)) {
-		printf("graph is bipartial\n");
-		print_parts(bipart_check_dfs(g));
-	}
-	else {
-		printf("graph is not bipartial\n");
+	//if (bipart_check_bfs(g)) {
+	//	printf("graph is bipartial\n");
+	//	print_parts(bipart_check_dfs(g));
+	//}
+	//else {
+	//	printf("graph is not bipartial\n");
+	//}
+
+	//if (topological_sort(g)) {
+	//	g->adj_list = change_vertexes(topological_sort(g), g);
+	//	graph_print(g);
+	//}
+	//else 
+	//	printf("Error: cycle has been found\n");
+
+	//tarjan_scc(g);
+	//scc(g);
+
+	while (true) {
+		printf("Enter expresson: ");
+		char* str = (char*)malloc(sizeof(char*));
+		fgets(str, 256, stdin);
+		graph* lg = readExpression(str);
+		if (lg) {
+			int* result = solveExpression(lg);
+			printSolution(result, lg->n/2);
+		}
+		printf("\n");
 	}
 
-	int* order = topological_sort(g);
-	if (order) {
-		g->adj_list = change_vertexes(order, g);
-		graph_print(g);
-	}
-	else
-		printf("Error: cycle has been found\n");
 
-	tarjan_scc(g);
-	scc(g);
 }
