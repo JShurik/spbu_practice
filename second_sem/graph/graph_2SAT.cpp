@@ -76,7 +76,7 @@ graph* readExpression(char* expression) {
 }
 
 int* solveExpression(graph* expression) {
-	int* comps = scc(expression);
+	int* comps = tarjan_scc(expression);
 	for (int i = 0; i < (expression->n/2); ++i) {
 		int indX = i, indNotX = expression->n - indX - 1;
 		if (comps[indX] == comps[indNotX]) {
@@ -87,7 +87,7 @@ int* solveExpression(graph* expression) {
 	int* result = (int*)malloc(expression->n / 2);
 	for (int i = 0; i < (expression->n / 2); ++i) {
 		int indX = i, indNotX = expression->n - indX - 1;
-		if (comps[indX] > comps[indNotX])
+		if (comps[indX] < comps[indNotX])
 			result[i] = 1;
 		else
 			result[i] = 0;
