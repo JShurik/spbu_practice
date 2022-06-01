@@ -5,6 +5,7 @@ void pushArc(arc** l, int node, int state) {
 	arc* new_ = (arc*)malloc(sizeof(arc));
 	new_->node = node;
 	new_->state = state;
+	new_->next = NULL;
 	if (*l == NULL)
 		*l = new_;
 	else
@@ -12,20 +13,26 @@ void pushArc(arc** l, int node, int state) {
 }
 
 dfa* dfaInit(int n) {
-	dfa* a = (dfa*)malloc(sizeof(dfa));
-	a->n = n;
-	//a->finalState = n - 1;
-	a->breakState = n - 1;
-	a->conditions = (arc**)malloc(sizeof(arc) * n);
-	while (n > 0) {
-		a->conditions[a->n - n] = NULL; //choose basic direction
-		n--;
+	dfa* result = (dfa*)malloc(sizeof(dfa));
+	if (result) {
+		result->numberOfStates = n;
+		result->finalStatesNum = 0;
+		result->finalStates = NULL;
+		result->verticesList = (arc**)malloc(sizeof(arc) * (n+1));
+		while (n >= 0) {
+			result->verticesList[n] = NULL;
+			pushArc(&result->verticesList[n], result->numberOfStates, 0);
+			pushArc(&result->verticesList[n], result->numberOfStates, 1);
+			n--;
+		}
 	}
-	return a;
+	else
+		return NULL;
+	return result;
 }
 
 void dfaFree(dfa* a) {
-	arc* ptr = a->conditions[0];
+	arc* ptr = a->verticesList[0];
 	arc* t;
 	while (ptr) {
 		t = ptr->next;
@@ -35,68 +42,74 @@ void dfaFree(dfa* a) {
 	free(a);
 }
 
-void dfaAddArc(int from, int state, int to, dfa* a) {
-	if (a) {
-		arc* temp = a->conditions[from];
-		pushArc(&temp, to, state);
-		a->conditions[from] = temp;
+void addFinalState(dfa* a, int finIndex) {
+	a->finalStatesNum += 1;
+	int* temp = (int*)malloc(a->finalStatesNum * sizeof(int));
+	memcpy((void*)temp, (void*)a->finalStates, (a->finalStatesNum-1) * sizeof(int));
+	free(a->finalStates);
+	temp[a->finalStatesNum - 1] = finIndex;
+	a->finalStates = temp;
+}
+
+void dfaSetArc(dfa* a, int from, int state, int to) {
+	arc* temp = a->verticesList[from];
+	while (temp->state != state) {
+		temp = temp->next;
+	}
+	temp->node = to;
+}
+
+void dfaResetArcs(int from, int to, dfa* a) {
+	for (int i = 0; i < a->numberOfStates; ++i) {
+		dfaSetArc(a, i, 0, a->numberOfStates);
+		dfaSetArc(a, i, 1, a->numberOfStates);
 	}
 }
 
-void dfaDeleteArc(int from, int to, dfa* a) {
-	if (a) {
-		//change direction
-		arc* temp = a->conditions[from];
-		if (temp->node == to) {
-			temp = temp->next;
-			if (temp) *(a->conditions[from]) = *temp;
-			else 
-				a->conditions[from] = NULL;
-			return;
-		}
-		while (temp->next->node != to) {
-			temp = temp->next;
-			if (temp->next == NULL) break;
-		}
-		if (temp == NULL || temp->next == NULL) {
-			return;
-		}
-		temp->next = temp->next->next;
+int isFinal(dfa* a, int ver) {
+	for (int i = 0; i <= a->finalStatesNum; ++i) {
+		if (ver == a->finalStates[i])
+			return 1;
 	}
-}
-
-void dfaPrint(dfa* a, int x) {
-	int current = 0;
-	int num = 0;
-	while (num != x) {
-
-	}
-}
-
-int findPow(int a) {
-	int result = 0;
-	while (a > 0) {
-		result++;
-		a /= 2;
-	}
-	return result;
+	return 0;
 }
 
 int dfaCheck(dfa* a, int x) {
-	int current = 0;
-	int pow = findPow(x);
-	int num = 1;
-	while (pow > 0) {
-		arc* temp = a->conditions[current];
-		while (temp->node != num) {
+	int currentNode = 0, currentState = 0, num = x;
+	while (num > 0) {
+		arc* temp = a->verticesList[currentNode];
+		if (temp == NULL) {
+			return 0;
+		}
+		currentState = num & 1;
+		while (temp->state != currentState) {
 			temp = temp->next;
 		}
-
+		currentNode = temp->node;
+		num >>= 1;
 	}
-	if (current == a->finalState)
-		return 1;
-	else
-		return 0;
+	return isFinal(a, currentNode);
 }
 
-dfa* intGFA(int a);
+void dfaPrint(dfa* a, int x) {
+	for (int i = 0; i < x; i++) {
+		if (dfaCheck(a, i)) {
+			printf("%d ", i);
+		}
+	}
+	printf("\n");
+}
+
+dfa* intDFA(int a) {
+	int count = 0;
+	while (a >= (1 << count)) 
+		count++;
+	dfa* result = dfaInit(count+1);
+	addFinalState(result, count);
+	for (int i = 0; i <= count; ++i) {
+		int currenState = a & 1;
+		dfaSetArc(result, i, currenState, i+1);
+		a >>= 1;
+	}
+	return result;
+}
