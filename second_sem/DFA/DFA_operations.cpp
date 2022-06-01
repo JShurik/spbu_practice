@@ -1,6 +1,9 @@
 #include <iostream>
 #include "DFA.h"
 
+enum oper { UNION, INTERSEC, DIFF };
+
+
 arc** clone_arcs_list(dfa* a) {
 	arc** result = (arc**)malloc(sizeof(arc)*(a->numberOfStates+1));
 	for (int i = 0; i <= a->numberOfStates; i++) {
@@ -40,12 +43,11 @@ dfa* dfa_complement(dfa* a) {
 	return result;
 }
 
-dfa* dfa_intersection(dfa* a1, dfa* a2) {
-	dfa* result = dfaInit((a1->numberOfStates+1) * (a2->numberOfStates+1)); 
-	int count = 0;
+dfa* dfa_decart(dfa* a1, dfa* a2, oper operType) {
+	dfa* result = dfaInit((a1->numberOfStates + 1) * (a2->numberOfStates + 1));
 	for (int i = 0; i <= a1->numberOfStates; ++i) {
 		for (int j = 0; j <= a2->finalStatesNum; ++j) {
-			int from = (a2->finalStatesNum+1) * i + j;
+			int from = (a2->finalStatesNum + 1) * i + j;
 			arc* temp1 = a1->verticesList[i];
 			arc* temp2 = a2->verticesList[j];
 			int to = 0;
@@ -62,67 +64,37 @@ dfa* dfa_intersection(dfa* a1, dfa* a2) {
 				to = (a2->finalStatesNum + 1) * temp1->next->node + temp2->node;
 				dfaSetArc(result, from, temp2->state, to);
 			}
-			if (isFinal(a1, i) && isFinal(a2, j))
-				addFinalState(result, from);
+			switch (operType)
+			{
+			case UNION:
+				if (isFinal(a1, i) || isFinal(a2, j))
+					addFinalState(result, from);
+				break;
+			case INTERSEC:
+				if (isFinal(a1, i) && isFinal(a2, j))
+					addFinalState(result, from);
+				break;
+			case DIFF:
+				if (isFinal(a1, i) && !isFinal(a2, j))
+					addFinalState(result, from);
+				break;
+			default:
+				break;
+			}
+
 		}
 	}
 	return result;
+}
+
+dfa* dfa_intersection(dfa* a1, dfa* a2) {
+	return dfa_decart(a1, a2, INTERSEC);
 }
 
 dfa* dfa_union(dfa* a1, dfa* a2) {
-	dfa* result = dfaInit((a1->numberOfStates + 1) * (a2->numberOfStates + 1));
-	int count = 0;
-	for (int i = 0; i <= a1->numberOfStates; ++i) {
-		for (int j = 0; j <= a2->finalStatesNum; ++j) {
-			int from = (a2->finalStatesNum + 1) * i + j;
-			arc* temp1 = a1->verticesList[i];
-			arc* temp2 = a2->verticesList[j];
-			int to = 0;
-			if (temp1->state == temp2->state) {
-				to = (a2->finalStatesNum + 1) * temp1->node + temp2->node;
-				dfaSetArc(result, from, temp1->state, to);
-				temp1 = temp1->next; temp2 = temp2->next;
-				to = (a2->finalStatesNum + 1) * temp1->node + temp2->node;
-				dfaSetArc(result, from, temp1->state, to);
-			}
-			else {
-				to = (a2->finalStatesNum + 1) * temp1->node + temp2->next->node;
-				dfaSetArc(result, from, temp1->state, to);
-				to = (a2->finalStatesNum + 1) * temp1->next->node + temp2->node;
-				dfaSetArc(result, from, temp2->state, to);
-			}
-			if (isFinal(a1, i) || isFinal(a2, j))
-				addFinalState(result, from);
-		}
-	}
-	return result;
+	return dfa_decart(a1, a2, UNION);
 }
 
 dfa* dfa_difference(dfa* a1, dfa* a2) {
-	dfa* result = dfaInit((a1->numberOfStates + 1) * (a2->numberOfStates + 1));
-	int count = 0;
-	for (int i = 0; i <= a1->numberOfStates; ++i) {
-		for (int j = 0; j <= a2->finalStatesNum; ++j) {
-			int from = (a2->finalStatesNum + 1) * i + j;
-			arc* temp1 = a1->verticesList[i];
-			arc* temp2 = a2->verticesList[j];
-			int to = 0;
-			if (temp1->state == temp2->state) {
-				to = (a2->finalStatesNum + 1) * temp1->node + temp2->node;
-				dfaSetArc(result, from, temp1->state, to);
-				temp1 = temp1->next; temp2 = temp2->next;
-				to = (a2->finalStatesNum + 1) * temp1->node + temp2->node;
-				dfaSetArc(result, from, temp1->state, to);
-			}
-			else {
-				to = (a2->finalStatesNum + 1) * temp1->node + temp2->next->node;
-				dfaSetArc(result, from, temp1->state, to);
-				to = (a2->finalStatesNum + 1) * temp1->next->node + temp2->node;
-				dfaSetArc(result, from, temp2->state, to);
-			}
-			if (isFinal(a1, i) && !isFinal(a2, j))
-				addFinalState(result, from);
-		}
-	}
-	return result;
+	return dfa_decart(a1, a2, DIFF);
 }
